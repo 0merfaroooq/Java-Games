@@ -4,33 +4,16 @@ import java.awt.event.*;
 import java.io.*;
 import java.nio.file.*;
 
-/**
- * GamePanel.java
- *
- * The heart of the game. This class:
- *  - Owns the game loop (runs at 60 FPS using a javax.swing.Timer)
- *  - Handles keyboard input
- *  - Manages game state (menu, countdown, playing, paused, game over)
- *  - Draws everything using Graphics2D
- *  - Persists the high score to a local text file
- *
- * The rendering loop (60 FPS) is deliberately separate from the game
- * "logic" speed (how often the snake actually moves). This is what
- * gives us smooth animation while still keeping classic Snake's
- * grid-based, step-by-step movement feel.
- */
 public class GamePanel extends JPanel implements ActionListener {
 
-    // ----- Grid / sizing constants -----
     static final int CELL_SIZE = 25;
     static final int GRID_WIDTH = 28;   // cells across
     static final int GRID_HEIGHT = 20;  // cells down
     static final int SCREEN_WIDTH = CELL_SIZE * GRID_WIDTH;
     static final int SCREEN_HEIGHT = CELL_SIZE * GRID_HEIGHT;
 
-    // ----- Timing -----
     static final int RENDER_FPS = 60;
-    static final int RENDER_DELAY_MS = 1000 / RENDER_FPS; // ~16ms for smooth 60 FPS rendering
+    static final int RENDER_DELAY_MS = 1000 / RENDER_FPS;
 
     static final int BASE_MOVE_DELAY_MS = 130; // starting snake speed (lower = faster)
     static final int MIN_MOVE_DELAY_MS = 60;   // fastest the snake is allowed to go
@@ -42,25 +25,20 @@ public class GamePanel extends JPanel implements ActionListener {
     private enum State { START_MENU, COUNTDOWN, PLAYING, PAUSED, GAME_OVER }
     private State state = State.START_MENU;
 
-    // ----- Core game objects -----
     private Snake snake;
     private Food food;
     private int score;
     private int highScore;
 
-    // ----- Timing bookkeeping -----
     private final Timer renderTimer;      // drives paint/repaint at 60 FPS
     private long lastMoveTime;            // last time the snake actually stepped
     private int currentMoveDelay;         // current ms between snake steps (speeds up over time)
 
-    // ----- Countdown state -----
     private long countdownStartTime;
     private static final int COUNTDOWN_SECONDS = 3;
 
-    // ----- Simple particle effect for eating food -----
     private final java.util.List<Particle> particles = new java.util.ArrayList<>();
 
-    // ----- Fonts -----
     private final Font titleFont = new Font("Consolas", Font.BOLD, 46);
     private final Font bigFont = new Font("Consolas", Font.BOLD, 32);
     private final Font mediumFont = new Font("Consolas", Font.BOLD, 22);
@@ -77,13 +55,10 @@ public class GamePanel extends JPanel implements ActionListener {
 
         addKeyListener(new InputHandler());
 
-        // The Timer fires actionPerformed() ~60 times per second.
-        // This drives repainting AND acts as our main game loop tick source.
         renderTimer = new Timer(RENDER_DELAY_MS, this);
         renderTimer.start();
     }
 
-    /** Resets snake, food, score, and timers for a fresh game. */
     private void initGameObjects() {
         snake = new Snake(GRID_WIDTH / 2, GRID_HEIGHT / 2);
         food = new Food(GRID_WIDTH, GRID_HEIGHT, snake);
@@ -92,9 +67,7 @@ public class GamePanel extends JPanel implements ActionListener {
         particles.clear();
     }
 
-    // =====================================================================
-    //  MAIN GAME LOOP (called ~60 times/second by the Swing Timer)
-    // =====================================================================
+
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (state) {
@@ -106,7 +79,7 @@ public class GamePanel extends JPanel implements ActionListener {
         repaint(); // triggers paintComponent() — runs at full 60 FPS regardless of snake speed
     }
 
-    /** Handles the "3...2...1...Go!" countdown before play starts. */
+
     private void updateCountdown() {
         long elapsed = System.currentTimeMillis() - countdownStartTime;
         if (elapsed >= (COUNTDOWN_SECONDS + 1) * 1000L) {
@@ -115,11 +88,6 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
-    /**
-     * Advances snake logic only when enough time has passed (currentMoveDelay).
-     * This decouples snake speed from render speed: rendering stays a silky
-     * 60 FPS even while the snake itself moves in discrete, grid-based steps.
-     */
     private void updateGame() {
         long now = System.currentTimeMillis();
         if (now - lastMoveTime < currentMoveDelay) {
@@ -141,8 +109,6 @@ public class GamePanel extends JPanel implements ActionListener {
             eatFood();
         }
     }
-
-    /** Applies the effects of eating a piece of food. */
     private void eatFood() {
         int points = food.getValue();
         score += points;
@@ -168,9 +134,6 @@ public class GamePanel extends JPanel implements ActionListener {
         Toolkit.getDefaultToolkit().beep();
     }
 
-    // =====================================================================
-    //  PARTICLES (small visual flourish when eating food)
-    // =====================================================================
 
     private void spawnParticles(int gridX, int gridY, boolean golden) {
         int cx = gridX * CELL_SIZE + CELL_SIZE / 2;
@@ -188,7 +151,7 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
-    /** A tiny fading dot used purely for visual polish when food is eaten. */
+
     private static class Particle {
         double x, y, vx, vy;
         int life = 20;
@@ -221,9 +184,6 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
-    // =====================================================================
-    //  RENDERING
-    // =====================================================================
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -252,7 +212,6 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
-    /** Draws the subtle background grid lines for a clean "arcade" feel. */
     private void drawGrid(Graphics2D g2d) {
         g2d.setColor(new Color(255, 255, 255, 12));
         for (int x = 0; x <= GRID_WIDTH; x++) {
@@ -263,7 +222,7 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
-    /** Draws the snake, food, particles, and HUD score — used by several states. */
+
     private void drawGameplayLayer(Graphics2D g2d) {
         food.draw(g2d, CELL_SIZE);
         snake.draw(g2d, CELL_SIZE);
@@ -354,17 +313,11 @@ public class GamePanel extends JPanel implements ActionListener {
         centerString(g2d, "Press R to Restart", SCREEN_HEIGHT / 2 + 60);
     }
 
-    /** Utility: draws a string horizontally centered at the given y-coordinate. */
     private void centerString(Graphics2D g2d, String text, int y) {
         FontMetrics fm = g2d.getFontMetrics();
         int x = (SCREEN_WIDTH - fm.stringWidth(text)) / 2;
         g2d.drawString(text, x, y);
     }
-
-    // =====================================================================
-    //  HIGH SCORE PERSISTENCE (plain local text file, no external libs)
-    // =====================================================================
-
     private int loadHighScore() {
         try {
             Path path = Paths.get(HIGH_SCORE_FILE);
@@ -375,7 +328,7 @@ public class GamePanel extends JPanel implements ActionListener {
                 }
             }
         } catch (IOException | NumberFormatException ex) {
-            // If the file is missing or corrupt, we simply fall back to 0.
+          
             System.err.println("Could not load high score: " + ex.getMessage());
         }
         return 0;
@@ -389,9 +342,6 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
-    // =====================================================================
-    //  INPUT HANDLING
-    // =====================================================================
 
     private class InputHandler extends KeyAdapter {
         @Override
@@ -405,7 +355,7 @@ public class GamePanel extends JPanel implements ActionListener {
                     }
                 }
                 case COUNTDOWN -> {
-                    // Ignore movement input during countdown to avoid a "buffered" jump at start
+             
                 }
                 case PLAYING -> handlePlayingInput(key);
                 case PAUSED -> {
