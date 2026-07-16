@@ -4,7 +4,8 @@ A polished, modern take on the classic arcade Snake game, built entirely
 in **Java 21** using **Java Swing** and **Graphics2D** — no external
 libraries, no JavaFX, no assets required. Runs anywhere a JDK does.
 
-![Snake Game Screenshot Placeholder](screenshots/gameplay.png)
+<img width="1080" height="804" alt="image" src="https://github.com/user-attachments/assets/87667f76-ce3b-4595-9fe4-fe5884836026" />
+
 
 ## Description
 
@@ -142,11 +143,12 @@ a JRE installed can double-click it (or run the command above) to play.
 
 ## Screenshots
 
-> _Add your own screenshots here once you've run the game!_
-
 | Start Menu | Gameplay | Game Over |
 |------------|----------|-----------|
-| `screenshots/menu.png` | `screenshots/gameplay.png` | `screenshots/gameover.png` |
+| <img width="892" height="677" alt="Screenshot 2026-07-16 204132" src="https://github.com/user-attachments/assets/ea589fbf-c337-4b0b-a6d6-e0685a02fb6b" />
+| <img width="1080" height="808" alt="image" src="https://github.com/user-attachments/assets/e86f4885-bd48-41c9-b2a5-e81a54194ca6" />
+ |<img width="1080" height="820" alt="image" src="https://github.com/user-attachments/assets/0eb8acc9-049b-4dce-9cf0-1400e2b390f4" />
+|
 
 ## Future Improvements
 
