@@ -2,17 +2,7 @@ import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.util.LinkedList;
 
-/**
- * Snake.java
- *
- * Represents the snake itself: its body segments, its current direction,
- * and the logic for moving, growing, and detecting collisions.
- *
- * The body is stored as a LinkedList of Point objects (grid coordinates,
- * NOT pixel coordinates). The head is always index 0.
- * A LinkedList is used because we frequently add to the front and
- * remove from the back — both O(1) operations for a linked list.
- */
+
 public class Snake {
 
     private final LinkedList<Point> body;
@@ -32,12 +22,6 @@ public class Snake {
         growPending = false;
     }
 
-    /**
-     * Queues a new direction. We don't apply it immediately because the
-     * player might press two keys between two game ticks; only the last
-     * valid direction before the next move should count. We also block
-     * 180-degree reversals here.
-     */
     public void setDirection(Direction newDirection) {
         if (!newDirection.isOpposite(this.direction)) {
             pendingDirection = newDirection;
@@ -49,12 +33,6 @@ public class Snake {
         growPending = true;
     }
 
-    /**
-     * Advances the snake by one grid cell in its current direction.
-     * Adds a new head; only removes the tail if the snake isn't growing
-     * this turn (eating food skips the tail-removal, which is what
-     * makes the snake longer).
-     */
     public void move() {
         direction = pendingDirection;
         Point head = body.getFirst();
@@ -74,10 +52,7 @@ public class Snake {
         return head.x < 0 || head.x >= gridWidth || head.y < 0 || head.y >= gridHeight;
     }
 
-    /**
-     * Returns true if the snake's head overlaps any other body segment.
-     * We skip index 0 (the head itself) when checking.
-     */
+
     public boolean hasHitSelf() {
         Point head = body.getFirst();
         for (int i = 1; i < body.size(); i++) {
@@ -108,11 +83,6 @@ public class Snake {
         return body.size();
     }
 
-    /**
-     * Draws the snake using rounded rectangles for a smoother, more modern
-     * look than plain squares. The head is drawn in a slightly brighter
-     * shade so the player can always tell which end is which.
-     */
     public void draw(Graphics2D g2d, int cellSize) {
         int index = 0;
         for (Point p : body) {
